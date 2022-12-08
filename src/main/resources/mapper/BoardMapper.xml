@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.human.dao.IF_boardDAO">
+	<insert id="insertOne" parameterType="com.human.vo.BoardVO">
+		<!-- insert into board_s values(#{num},#{name},#{email},#{title},#{content},#{pass},#{cnt},#{indate}) -->
+		
+		insert into board_s values(board_cnt.nextval,#{name},#{email},#{title},#{content},#{pass},default,default)
+	</insert>
+	<!-- 쿼리문, 파라미터, 리턴값 >> 조금더 갚이 자료형이 무엇인가? 파라미터는 객체? String? Intger?
+		리턴값은 단일 객체인가, String? Intger? List -->
+	<select id="selectAll" resultType="com.human.vo.BoardVO">
+		select t.* from (select sub.*, rownum as rnum from (select * from board_s order by num asc) sub) t
+where rnum between #{startNo} and #{endNo}
+	</select>
+	<select id="countBoard" resultType="int">
+		select count(*) from board_s
+	</select>
+	
+	<select id="selectOne" resultType="com.human.vo.BoardVO">
+		select * from board_s where num = #{vno}
+	</select>
+	<select id="selectAttach" resultType="String">
+		select fname from board_attach where num=#{vno}
+	</select>
+	
+	<insert id="board_attach" parameterType="String">
+		insert into board_attach values((select max(num) from board_s),#{filename},default)
+	</insert>
+	<update id="cntplus">
+		update board_s set cnt=cnt+1 where num=#{vno}
+	</update>
+	<delete id="boardDel">
+		delete from board_s where num=#{vno}
+	</delete>
+	<update id="boardUpdate">
+		update board_s set pass=#{pass},email=#{email},title=#{title},content=#{content} where num=#{num}
+	</update>
+</mapper>
